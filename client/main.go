@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
+	"grpc-category/client/cat"
 	"log"
-
-	"grpc-category/proto/category"
 
 	"google.golang.org/grpc"
 )
@@ -16,15 +14,15 @@ func main () {
 		log.Fatalf("Failed to connect: %s", err)
 	}
 
-	c := category.NewCategoryServiceClient(conn)
-
-	res, err := c.GetCategory(context.Background(), &category.GetCategoryRequest{
-		ID : 2,
-	})
+	categoryClient := cat.NewClient(conn)
+	res, err := categoryClient.GetCategory(2)
 
 	if err != nil {
 		log.Fatalf("Error while calling Get Category: %s", err)
 	}
 
 	log.Printf("Response ID: %#v", res)
+	if err := categoryClient.GetCategories(); err != nil {
+		log.Fatalf("Error while calling Get Category: %s", err)
+	}
 }

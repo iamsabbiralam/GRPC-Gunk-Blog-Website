@@ -2,8 +2,8 @@ package category
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"time"
 
 	protoCategory "grpc-category/proto/category"
 
@@ -28,7 +28,7 @@ var categories = []Category{
 	{
 		ID : 2,
 		CategoryName: "This is category 2",
-		Status: true,
+		Status: false,
 	},
 	{
 		ID : 3,
@@ -43,10 +43,9 @@ var categories = []Category{
 }
 
 func (s *Server) GetCategory(ctx context.Context, req *protoCategory.GetCategoryRequest) (*protoCategory.GetCategoryResponse, error) {
-	log.Printf("Category ID: %d", req.GetID())
 	var category Category
+	log.Printf("Category ID: %d", req.GetID())
 	for _, value := range categories {
-		fmt.Println(value)
 		if value.ID == req.GetID() {
 			category = value
 			break
@@ -61,4 +60,20 @@ func (s *Server) GetCategory(ctx context.Context, req *protoCategory.GetCategory
 		CategoryName: category.CategoryName,
 		Status: category.Status,
 	}, nil
+}
+
+func (s *Server) GetCategories(req *protoCategory.GetCategoriesRequest, stream protoCategory.CategoryService_GetCategoriesServer) error {
+	for _, value := range categories {
+		err := stream.Send(&protoCategory.GetCategoryResponse{
+			ID: value.ID,
+			CategoryName: value.CategoryName,
+			Status: value.Status,
+		})
+		if err != nil {
+			return status.Error(codes.NotFound, "failed to send Category")
+		}
+
+		time.Sleep(time.Second * 2)
+	}
+	return nil
 }
