@@ -1,4 +1,4 @@
-module grpc-category
+module grpc-blog
 
 go 1.17
 
