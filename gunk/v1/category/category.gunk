@@ -1,10 +1,9 @@
 package category
 
 type Category struct {
-	ID          int64  `pb:"1"`
-	Title       string `pb:"2"`
-	Description string `pb:"3"`
-	IsComplete  bool   `pb:"4"`
+	ID 	         int64  `pb:"1"`
+	CategoryName       string `pb:"2"`
+	IsComplete  bool   `pb:"3"`
 }
 
 type CreateCategoryRequest struct {
