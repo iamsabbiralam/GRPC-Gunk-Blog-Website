@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"strconv"
@@ -17,12 +18,6 @@ import (
 )
 
 func main () {
-	lis, err := net.Listen("tcp", ":3000")
-
-	if err != nil {
-		log.Fatalf("Failed to run server: %s", err)
-	}
-
 	config := viper.NewWithOptions(
 		viper.EnvKeyReplacer(
 			strings.NewReplacer(".", "_"),
@@ -45,6 +40,12 @@ func main () {
 
 	protoCategory.RegisterCategoryServiceServer(grpcServer, s)
 
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", config.GetString("server.host"), config.GetString("server.port")))
+	if err != nil {
+		log.Fatalf("Failed to run server: %s", err)
+	}
+
+	log.Printf("Server is starting on: http://%s:%s", config.GetString("server.host"), config.GetString("server.port"))
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed too serve: %s", err)
 	}
