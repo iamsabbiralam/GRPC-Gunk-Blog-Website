@@ -21,5 +21,5 @@ func NewCoreSvc(s categoryStore) *CoreSvc {
 }
 
 func (cs *CoreSvc) Create(ctx context.Context, c storage.Category) (int64, error) {
-	return 0, nil
+	return cs.store.Create(ctx, c)
 }
