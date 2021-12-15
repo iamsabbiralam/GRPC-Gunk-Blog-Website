@@ -5,7 +5,7 @@ import (
 	"grpc-blog/blog/storage"
 )
 
-const insertCategory = `INSERT INTO categories (category_name) VALUES (:category_name);`
+const insertCategory = `INSERT INTO categories (category_name) VALUES (:category_name) RETURNING id;`
 
 func (s *Storage) Create(ctx context.Context, t storage.Category) (int64, error) {
 	stmt, err := s.db.PrepareNamed(insertCategory)

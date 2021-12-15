@@ -20,3 +20,11 @@ func NewStorage(dbstring string) (*Storage, error)	{
 	db.SetConnMaxLifetime(time.Hour)
 	return &Storage{db: db}, nil
 }
+
+func NewTestStorage(dbstring string, migrationDir string) (*Storage, func()) {
+	db, teardown := MustNewDevelopmentDB(dbstring, migrationDir)
+	db.SetMaxOpenConns(5)
+	db.SetConnMaxLifetime(time.Hour)
+
+	return &Storage{db: db}, teardown
+}
