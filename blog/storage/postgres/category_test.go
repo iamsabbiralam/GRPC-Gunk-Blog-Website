@@ -19,9 +19,17 @@ func TestCreateCategory(t *testing.T) {
 		{
 			name: "CREATE_CATEGORY_SUCCESS",
 			in: storage.Category{
-				CategoryName: "This is sports category",
+				CategoryName: "This is category",
 			},
 			want: 1,
+		},
+		{
+			name: "FAILED_DUPLICATE_CATEGORY",
+			in: storage.Category{
+				CategoryName: "This is category",
+			},
+			//want: 2,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

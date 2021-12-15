@@ -10,11 +10,11 @@ const insertCategory = `INSERT INTO categories (category_name) VALUES (:category
 func (s *Storage) Create(ctx context.Context, t storage.Category) (int64, error) {
 	stmt, err := s.db.PrepareNamed(insertCategory)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 	var id int64
 	if err := stmt.Get(&id, t); err != nil {
-		return 0, nil
+		return 0, err
 	}
 	return id, nil
 }
