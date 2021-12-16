@@ -5,7 +5,13 @@ import (
 	"grpc-blog/blog/storage"
 )
 
-const insertCategory = `INSERT INTO categories (category_name) VALUES (:category_name) RETURNING id;`
+const insertCategory = `
+	INSERT INTO categories (
+			category_name
+		) VALUES (
+			:category_name
+		) RETURNING id;
+`
 
 func (s *Storage) Create(ctx context.Context, t storage.Category) (int64, error) {
 	stmt, err := s.db.PrepareNamed(insertCategory)
@@ -25,4 +31,32 @@ func (s *Storage) Get(ctx context.Context, id int64) (*storage.Category, error) 
 		return nil, err
 	}
 	return &t, nil
+}
+
+const updateCategory = `
+	UPDATE categories
+	SET
+		category_name = :category_name
+	WHERE
+		id = :id
+	RETURNING *;
+`
+
+func (s *Storage) Update(ctx context.Context, t storage.Category) (*storage.Category, error) {
+	stmt, err := s.db.PrepareNamed(updateCategory)
+	if err != nil {
+		return nil, err
+	}
+	if err := stmt.Get(&t, t); err != nil {
+		return nil, err
+	}
+	return &t, nil
+}
+
+func (s *Storage) Delete(ctx context.Context, id int64) error {
+	var t storage.Category
+	if err := s.db.Get(&t, "DELETE FROM categories WHERE id = $1 RETURNING *", id); err != nil {
+		return err
+	}
+	return nil
 }

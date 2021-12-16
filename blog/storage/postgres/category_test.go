@@ -88,3 +88,73 @@ func TestGetCategory(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateCategories(t *testing.T) {
+
+	s := newTestStorage(t)
+
+	tests := []struct {
+		name    string
+		in      storage.Category
+		want    *storage.Category
+		wantErr bool
+	}{
+		{
+			name: "UPDATE_CATEGORY_SUCCESS",
+			in: storage.Category{
+				ID:           1,
+				CategoryName: "This is category update",
+				IsCompleted:  false,
+			},
+			want: &storage.Category{
+				ID:           1,
+				CategoryName: "This is category update",
+				IsCompleted:  false,
+			},
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := s.Update(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.update() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("Diff: got -, want + = %v", cmp.Diff(got, tt.want))
+			}
+		})
+	}
+}
+
+func TestDeleteCategories(t *testing.T) {
+
+	s := newTestStorage(t)
+
+	tests := []struct {
+		name    string
+		in      int64
+		wantErr bool
+	}{
+		{
+			name: "DELETE_CATEGORY_SUCCESS",
+			in: 1,
+		},
+		{
+			name: "FAILED_TO_DELETE_CATEGORY_ID_DOES_NOT_EXIST",
+			in: 100,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			err := s.Delete(context.TODO(), tt.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.update() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
+}
