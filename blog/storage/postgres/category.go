@@ -18,3 +18,11 @@ func (s *Storage) Create(ctx context.Context, t storage.Category) (int64, error)
 	}
 	return id, nil
 }
+
+func (s *Storage) Get(ctx context.Context, id int64) (*storage.Category, error) {
+	var t storage.Category
+	if err := s.db.Get(&t, "SELECT * FROM categories WHERE id = $1", id); err != nil {
+		return nil, err
+	}
+	return &t, nil
+}
