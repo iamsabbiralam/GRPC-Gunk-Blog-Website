@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CategoryServiceClient interface {
 	Create(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CreateCategoryResponse, error)
+	Show(ctx context.Context, in *ShowCategoryrequest, opts ...grpc.CallOption) (*ShowCategoryResponse, error)
 	Get(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error)
 	Update(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*UpdateCategoryResponse, error)
 	Delete(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*DeleteCategoryResponse, error)
@@ -36,6 +37,15 @@ func NewCategoryServiceClient(cc grpc.ClientConnInterface) CategoryServiceClient
 func (c *categoryServiceClient) Create(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CreateCategoryResponse, error) {
 	out := new(CreateCategoryResponse)
 	err := c.cc.Invoke(ctx, "/category.CategoryService/Create", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *categoryServiceClient) Show(ctx context.Context, in *ShowCategoryrequest, opts ...grpc.CallOption) (*ShowCategoryResponse, error) {
+	out := new(ShowCategoryResponse)
+	err := c.cc.Invoke(ctx, "/category.CategoryService/Show", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,6 +93,7 @@ func (c *categoryServiceClient) Complete(ctx context.Context, in *CompleteCatego
 // for forward compatibility
 type CategoryServiceServer interface {
 	Create(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error)
+	Show(context.Context, *ShowCategoryrequest) (*ShowCategoryResponse, error)
 	Get(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error)
 	Update(context.Context, *UpdateCategoryRequest) (*UpdateCategoryResponse, error)
 	Delete(context.Context, *DeleteCategoryRequest) (*DeleteCategoryResponse, error)
@@ -96,6 +107,9 @@ type UnimplementedCategoryServiceServer struct {
 
 func (UnimplementedCategoryServiceServer) Create(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedCategoryServiceServer) Show(context.Context, *ShowCategoryrequest) (*ShowCategoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
 }
 func (UnimplementedCategoryServiceServer) Get(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
@@ -136,6 +150,24 @@ func _CategoryService_Create_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CategoryServiceServer).Create(ctx, req.(*CreateCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CategoryService_Show_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShowCategoryrequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CategoryServiceServer).Show(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/category.CategoryService/Show",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CategoryServiceServer).Show(ctx, req.(*ShowCategoryrequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -222,6 +254,10 @@ var CategoryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _CategoryService_Create_Handler,
+		},
+		{
+			MethodName: "Show",
+			Handler:    _CategoryService_Show_Handler,
 		},
 		{
 			MethodName: "Get",

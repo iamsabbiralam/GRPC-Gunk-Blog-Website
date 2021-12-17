@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"grpc-blog/blog/storage"
+	"log"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -44,6 +45,43 @@ func TestCreateCategory(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("Storage.Create() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestShowCategories(t *testing.T) {
+
+	s := newTestStorage(t)
+
+	tests := []struct {
+		name    string
+		in      storage.Category
+		want	storage.Category
+		wantErr bool
+	}{
+		{
+			name: "SHOW_CATEGORY_SUCCESS",
+			in: storage.Category{},
+			want: storage.Category{},
+		},
+		// {
+		// 	name: "FAILED_TO_SHOW_CATEGORY_DOES_NOT_EXIST",
+		// 	in: storage.Category{},
+		// 	wantErr: true,
+		// },
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := s.Show(context.TODO(), tt.in)
+			log.Printf("========: %#v", got)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Storage.Show() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Storage.Show() = %v, want %v", got, tt.want)
 			}
 		})
 	}

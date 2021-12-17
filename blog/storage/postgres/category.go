@@ -25,6 +25,14 @@ func (s *Storage) Create(ctx context.Context, t storage.Category) (int64, error)
 	return id, nil
 }
 
+func (s *Storage) Show(ctx context.Context, c storage.Category) (storage.Category, error) {
+	var t storage.Category
+	if err := s.db.Select(&t, "SELECT * FROM categories", c); err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
 func (s *Storage) Get(ctx context.Context, id int64) (*storage.Category, error) {
 	var t storage.Category
 	if err := s.db.Get(&t, "SELECT * FROM categories WHERE id = $1", id); err != nil {
@@ -47,7 +55,8 @@ func (s *Storage) Update(ctx context.Context, t storage.Category) (*storage.Cate
 	if err != nil {
 		return nil, err
 	}
-	if err := stmt.Get(&t, t); err != nil {
+	var st storage.Category
+	if err := stmt.Get(&st, t); err != nil {
 		return nil, err
 	}
 	return &t, nil
